@@ -85,7 +85,7 @@ except:
 
 # Seniority detection based on the job title
 seniority = "Mid"  # Default to Mid
-if any(keyword.lower() in job_title.lower() for keyword in ['senior', 'ii', '2', 'iii', 'iiii', '3', '4', '5']):
+if any(keyword.lower() in job_title.lower() for keyword in ['senior', ' ii ', ' 2 ', 'iii', 'iiii', ' 3 ', ' 4 ', ' 5 ']):
     seniority = "Senior"
 
 # Category detection based on keywords in the job title
@@ -111,15 +111,15 @@ print(f"Category: {category}")
 #%% File appending
 
 # Append the data to an Excel file Put your cureent
-file_name = r"Job Tracker.xlsx"
+file_name = "Put your file name"
 new_data = pd.DataFrame({
     'Title': [job_title],
     'Company': [company_name],
     'Location': [location],
-    'Date': [date_applied],  
+    'Date': [date_applied],  # Using today's date
     'Salary': [salary],
     'Seniority': [seniority],
-    'Category': [category]
+    'Category': [category]# Will be blank if not found
 })
 
 
@@ -129,15 +129,50 @@ if os.path.exists(file_name):
     updated_data = pd.concat([existing_data, new_data], ignore_index=True)
 else:
     updated_data = new_data
+
+#%% Updataed data transformations
+
+# Function to clean and convert shorthand salary
+def convert_salary(salary):
     
+    # Check if salary is NaN or not a string
+    if pd.isna(salary) or not isinstance(salary, str):
+        return np.nan, np.nan
+    # Check if the salary is a range
+    if '-' in salary:
+        # Split the salary into min and max parts
+        min_salary, max_salary = salary.split('-')
+    else:
+        # If it's a single salary, treat it as both min and max
+        min_salary = max_salary = salary
+
+    # Remove 'k' and convert to numeric only if 'k' is present
+    if 'k' in min_salary.lower():
+        min_salary = int(re.sub(r'[^\d]', '', min_salary)) * 1000
+    else:
+        min_salary = int(re.sub(r'[^\d]', '', min_salary))
+    
+    if 'k' in max_salary.lower():
+        max_salary = int(re.sub(r'[^\d]', '', max_salary)) * 1000
+    else:
+        max_salary = int(re.sub(r'[^\d]', '', max_salary))
+    
+    return min_salary, max_salary
+
+# Apply the function to the Salary column
+updated_data['Min Salary'], updated_data['Max Salary'] = zip(*updated_data['Salary'].apply(convert_salary))   
+#drop old column
+updated_data = updated_data.drop(columns=['Salary'])
+
+# Rearrange columns to place 'Min Salary' and 'Max Salary' where 'Salary' was
+updated_data = updated_data[['Date', 'Category', 'Title', 'Seniority', 'Company', 'Min Salary', 'Max Salary', 'Location', 'Hear back Date', 'Decision']]
+ 
 #convert df date to right format
 updated_data['Date'] = pd.to_datetime(updated_data['Date']).dt.strftime('%#m/%d/%Y') 
-
 
 # Save the updated data to the Excel file
 updated_data.to_excel(file_name, index=False)
 
-print(f"\nData successfully appended to {file_name}")
 
 # Close the driver
 driver.quit()
