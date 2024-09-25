@@ -67,45 +67,59 @@ try:
 except:
     company_name = "Company name not found"
 
-# Location
+# Location using the provided XPath
 try:
     location = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[1]/div/div/div/div[3]/div/span[1]'))).text
 except:
     location = "Location not found"
 
 # Date Posted (will be today’s date)
-date_applied = datetime.today().strftime('%-m/%d/%y')
-
-# Salary 
+date_applied = datetime.today().strftime('%#m/%d/%Y')
 
 try:
     salary = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[7]/div[1]/div/div[2]/p'))).text
 except:
     salary = ""  # Leave blank if salary is not found
 
+# Seniority detection based on the job title
+seniority = "Mid"  # Default to Mid
+if any(keyword.lower() in job_title.lower() for keyword in ['senior', 'ii', '2', 'iii', 'iiii', '3', '4', '5']):
+    seniority = "Senior"
 
+# Category detection based on keywords in the job title
+categories = ['Data Analytics', 'Data Science', 'Data Engineering', 'Business Intelligence']
+category = 'Data Engineering'  # Default category
 
+# Check the job title for any of the categories
+for cat in categories:
+    if cat.lower() in job_title.lower():
+        category = cat
+        break  # Stop at the first match
 
 # Print the results
 print(f"\nJob Title: {job_title}")
 print(f"Company Name: {company_name}")
 print(f"Location: {location}")
 print(f"Date Applied: {date_applied}")
-print(f"Salary: {salary}")
-
+print(f"\nSalary: {salary}")
+print(f"Seniority: {seniority}")
+print(f"Category: {category}")
 
 
 #%% File appending
 
 # Append the data to an Excel file Put your cureent
-file_name = r"C:\Users\Matth\OneDrive\Documents\JobMaxing\Job Tracker.xlsx"
+file_name = r"Job Tracker.xlsx"
 new_data = pd.DataFrame({
     'Title': [job_title],
     'Company': [company_name],
     'Location': [location],
-    'Date': [date_applied],  # Using today's date
-    'Salary': [salary]  # Will be blank if not found
+    'Date': [date_applied],  
+    'Salary': [salary],
+    'Seniority': [seniority],
+    'Category': [category]
 })
+
 
 # Check if the file exists, if it does append data, otherwise create a new one
 if os.path.exists(file_name):
