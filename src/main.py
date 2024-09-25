@@ -76,10 +76,12 @@ except:
 # Date Posted (will be today’s date)
 date_applied = datetime.today().strftime('%#m/%d/%Y')
 
+#Salary
 try:
-    salary = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[7]/div[1]/div/div[2]/p'))).text
+    salary = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[1]/div/div/div/div[4]/ul/li[1]/span/span[1]'))).text
 except:
     salary = ""  # Leave blank if salary is not found
+
 
 # Seniority detection based on the job title
 seniority = "Mid"  # Default to Mid
@@ -129,7 +131,7 @@ else:
     updated_data = new_data
     
 #convert df date to right format
-existing_data['Date'] = pd.to_datetime(existing_data['Date']).dt.strftime('%#m/%d/%Y') 
+updated_data['Date'] = pd.to_datetime(updated_data['Date']).dt.strftime('%#m/%d/%Y') 
 
 
 # Save the updated data to the Excel file
