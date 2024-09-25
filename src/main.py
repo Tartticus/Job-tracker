@@ -67,7 +67,7 @@ try:
 except:
     company_name = "Company name not found"
 
-# Location using the provided XPath
+# Location
 try:
     location = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[1]/div/div/div/div[3]/div/span[1]'))).text
 except:
@@ -76,11 +76,13 @@ except:
 # Date Posted (will be today’s date)
 date_applied = datetime.today().strftime('%-m/%d/%y')
 
-# Salary using the provided XPath, leaving blank if not found
+# Salary 
+
 try:
-    salary = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[6]/div[1]/div/div[2]/p'))).text
+    salary = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[7]/div[1]/div/div[2]/p'))).text
 except:
     salary = ""  # Leave blank if salary is not found
+
 
 
 
