@@ -127,6 +127,9 @@ if os.path.exists(file_name):
     updated_data = pd.concat([existing_data, new_data], ignore_index=True)
 else:
     updated_data = new_data
+    
+#convert df date to right format
+existing_data['Date'] = pd.to_datetime(existing_data['Date']).dt.strftime('%#m/%d/%Y') 
 
 
 # Save the updated data to the Excel file
