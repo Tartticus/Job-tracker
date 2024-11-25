@@ -68,8 +68,11 @@ except:
 try:
     location = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[1]/div/div/div/div[3]/div/span[1]'))).text
 except:
-    location = "Location not found"
-
+     print("Location not found with method 1")
+     try: 
+        location = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[6]/div[3]/div[2]/div/div/main/div[2]/div[1]/div/div[1]/div/div/div/div[3]/div/span[1]'))).text
+     except:
+         location = 'Location not found'
 # Date Posted (will be today’s date)
 date_applied = datetime.today().strftime('%#m/%d/%Y')
 
