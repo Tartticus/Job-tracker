@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep 25 09:14:06 2024
-
-@author: Matth
-"""
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -13,7 +7,10 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import pandas as pd
 import os
+import re
+import numpy as np
 from datetime import datetime
+
 # Set up the Chrome driver using webdriver_manager for automatic driver management
 
 
@@ -111,7 +108,7 @@ print(f"Category: {category}")
 #%% File appending
 
 # Append the data to an Excel file Put your cureent
-file_name = "Put your file name"
+file_name = "Job Tracker.xlsx"
 new_data = pd.DataFrame({
     'Title': [job_title],
     'Company': [company_name],
@@ -159,16 +156,24 @@ def convert_salary(salary):
     
     return min_salary, max_salary
 
-# Apply the function to the Salary column
-updated_data['Min Salary'], updated_data['Max Salary'] = zip(*updated_data['Salary'].apply(convert_salary))   
+try:
+    # Apply the function to the Salary column
+    updated_data['Min Salary'], updated_data['Max Salary'] = zip(*updated_data['Salary'].apply(convert_salary))  
+except:
+    print("Salary not found")
+    updated_data['Min Salary'] = ""
+    updated_data['Max Salary'] = ""
+    pass
 #drop old column
 updated_data = updated_data.drop(columns=['Salary'])
 
 # Rearrange columns to place 'Min Salary' and 'Max Salary' where 'Salary' was
-updated_data = updated_data[['Date', 'Category', 'Title', 'Seniority', 'Company', 'Min Salary', 'Max Salary', 'Location', 'Hear back Date', 'Decision']]
+updated_data = updated_data[['Date', 'Category', 'Title', 'Seniority', 'Company', 'Min Salary', 'Max Salary', 'Location']]
  
 #convert df date to right format
 updated_data['Date'] = pd.to_datetime(updated_data['Date']).dt.strftime('%#m/%d/%Y') 
+
+
 
 # Save the updated data to the Excel file
 updated_data.to_excel(file_name, index=False)
